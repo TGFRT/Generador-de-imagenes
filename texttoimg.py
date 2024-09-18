@@ -3,37 +3,38 @@ from googletrans import Translator
 import requests
 import io
 from PIL import Image
-import random
 
 # Configuración de la página
-st.set_page_config(page_title="Generador de Imágenes ", page_icon="🎨", layout="centered")
+st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
 
 # Título de la aplicación
-st.title("Generador de Imágenes a partir de Descripciones - IngenIAr")
+st.title("Generador de Imágenes a partir de Descripciones en Español")
 
 # Explicación
 st.write("""
-Esta herramienta usa un modelo de IngenIAr para darte 2 imágenes de acuerdo a tu descripción.
+Esta aplicación traduce tu descripción en español al inglés, luego usa un modelo de Hugging Face para generar dos imágenes a partir de esa descripción.
+Las imágenes serán ligeramente diferentes.
 """)
 
 # Crear un objeto traductor
 translator = Translator()
 
 # Pedir al usuario el prompt en español mediante un input de Streamlit
-user_prompt = st.text_input("¿Qué deseas generar?")
+user_prompt = st.text_input("¿Qué deseas generar? (en español)")
 
-# Variable para controlar si se generaron las imágenes
-generated = False
-
-# Botón para generar las imágenes
+# Botón para ejecutar la generación de las imágenes
 if st.button("Generar Imágenes"):
     if user_prompt:
         # Traducir el prompt al inglés
         translated_prompt = translator.translate(user_prompt, src='es', dest='en').text
         
-        # Variar ligeramente el prompt para las dos imágenes con un número aleatorio
-        prompt_1 = translated_prompt + f" with vibrant colors {random.randint(1, 10000)}"
-        prompt_2 = translated_prompt + f" with a dreamy atmosphere {random.randint(1, 10000)}"
+        # Variar ligeramente el prompt para las dos imágenes
+        prompt_1 = translated_prompt + " with vibrant colors"
+        prompt_2 = translated_prompt + " with a dreamy atmosphere"
+        
+        # Mostrar las traducciones al usuario
+        st.write(f"Prompt 1 traducido al inglés: **{prompt_1}**")
+        st.write(f"Prompt 2 traducido al inglés: **{prompt_2}**")
         
         # Definir la API y los headers de Hugging Face
         API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
@@ -87,10 +88,5 @@ if st.button("Generar Imágenes"):
                 file_name="imagen_2.png",
                 mime="image/png"
             )
-
-            # Cambiar el estado de la variable para mostrar el botón "Volver a generar"
-            generated = True
     else:
-        st.warning("Por favor, introduce una descripción para generar las imágenes.")
-
-# Mostrar el botón "Volver a generar" solo si las imágenes ya fueron generad
+        st.warning("Por favor, introduce un prompt para generar las imágenes.")
