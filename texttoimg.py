@@ -8,83 +8,69 @@ import random
 # Configuración de la página
 st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
 
-# Aplicar estilo CSS personalizado para mejorar el diseño de la interfaz
+# Aplicar estilo CSS personalizado para una apariencia minimalista
 st.markdown("""
     <style>
-    /* Fondo degradado */
+    /* Fondo blanco y texto oscuro */
     .stApp {
-        background: linear-gradient(to right, #000428, #004e92);
-        color: white;
+        background-color: #f5f5f5;
+        color: #333333;
     }
 
-    /* Tarjetas con sombra para las imágenes */
-    .stImage {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        border-radius: 10px;
-        overflow: hidden;
+    /* Títulos */
+    h1 {
+        color: #333333;
     }
 
     /* Diseño del botón */
     .stButton button {
-        background-color: #0066ff;
+        background-color: #007bff;
         color: white;
-        font-size: 18px;
-        border-radius: 8px;
-        padding: 10px 20px;
-        box-shadow: 0 4px 8px rgba(0, 102, 255, 0.4);
+        font-size: 16px;
+        border-radius: 6px;
+        padding: 12px 24px;
+        border: none;
     }
     .stButton button:hover {
-        background-color: #0052cc;
+        background-color: #0056b3;
     }
 
-    /* Texto del título y subtítulos */
-    h1, h2, h3, h4 {
-        color: #ffffff;
-    }
-
-    /* Text input */
+    /* Texto del input */
     .stTextInput > div > input {
-        background-color: #ffffff22;
-        color: white;
-        border-radius: 8px;
+        background-color: #ffffff;
+        color: #333333;
+        border-radius: 6px;
         padding: 10px;
+        border: 1px solid #dddddd;
+    }
+
+    /* Tarjetas de imagen */
+    .stImage {
+        border: 1px solid #dddddd;
+        border-radius: 6px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # Título de la aplicación
-st.title("🖼️ Generador de Imágenes con Traducción")
+st.title("Generador de Imágenes con Traducción")
 
 # Explicación
 st.write("""
-Esta aplicación traduce tu descripción en español al inglés, luego usa un modelo de Hugging Face para generar **dos imágenes ligeramente diferentes**. Puedes hacer clic en "Volver a generar" para obtener nuevas imágenes.
+Esta aplicación traduce tu descripción en español al inglés y luego usa un modelo para generar dos imágenes ligeramente diferentes. Introduce tu descripción y haz clic en "Generar Imágenes" para ver los resultados.
 """)
-
-# Modo oscuro
-dark_mode = st.sidebar.checkbox("🌙 Modo Oscuro")
-
-# Cambiar a modo oscuro si se activa
-if dark_mode:
-    st.markdown("""
-    <style>
-    .stApp {
-        background-color: #1e1e1e;
-        color: #ffffff;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
 # Crear un objeto traductor
 translator = Translator()
 
 # Pedir al usuario el prompt en español mediante un input de Streamlit
-user_prompt = st.text_input("🔤 ¿Qué deseas generar? (en español)")
+user_prompt = st.text_input("¿Qué deseas generar? (en español)")
 
 # Variable para controlar si se generaron las imágenes
 generated = False
 
 # Botón para generar las imágenes
-if st.button("🎨 Generar Imágenes"):
+if st.button("Generar Imágenes"):
     if user_prompt:
         # Traducir el prompt al inglés
         translated_prompt = translator.translate(user_prompt, src='es', dest='en').text
@@ -103,7 +89,7 @@ if st.button("🎨 Generar Imágenes"):
             return response
 
         # Generar dos imágenes con prompts ligeramente diferentes
-        with st.spinner("🎬 Generando imágenes..."):
+        with st.spinner("Generando imágenes..."):
             image_bytes_1 = query({"inputs": prompt_1})
             image_bytes_2 = query({"inputs": prompt_2})
 
@@ -119,10 +105,10 @@ if st.button("🎨 Generar Imágenes"):
             col1, col2 = st.columns(2)
             
             with col1:
-                st.image(image_1, caption="🌅 Imagen 1", use_column_width=True, output_format="PNG")
+                st.image(image_1, caption="Imagen 1", use_column_width=True)
             
             with col2:
-                st.image(image_2, caption="🌄 Imagen 2", use_column_width=True, output_format="PNG")
+                st.image(image_2, caption="Imagen 2", use_column_width=True)
 
             # Crear botones de descarga para ambas imágenes
             buf1 = io.BytesIO()
@@ -133,26 +119,20 @@ if st.button("🎨 Generar Imágenes"):
             buf2.seek(0)
 
             col1.download_button(
-                label="💾 Descargar Imagen 1",
+                label="Descargar Imagen 1",
                 data=buf1,
                 file_name="imagen_1.png",
                 mime="image/png"
             )
 
             col2.download_button(
-                label="💾 Descargar Imagen 2",
+                label="Descargar Imagen 2",
                 data=buf2,
                 file_name="imagen_2.png",
                 mime="image/png"
             )
 
-            # Cambiar el estado de la variable para mostrar el botón "Volver a generar"
+            # Cambiar el estado de la variable para mostrar que las imágenes se generaron
             generated = True
     else:
-        st.warning("⚠️ Por favor, introduce un prompt para generar las imágenes.")
-
-# Mostrar el botón "🔄 Volver a generar" solo si las imágenes ya fueron generadas
-if generated:
-    if st.button("🔄 Volver a generar"):
-        # Forzar la recarga de la página para generar nuevas imágenes
-        st.experimental_rerun()
+        st.warning("Por favor, introduce un prompt para generar las imágenes.")
