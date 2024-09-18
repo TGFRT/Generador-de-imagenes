@@ -8,46 +8,54 @@ import random
 # Configuración de la página
 st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
 
-# Aplicar estilo CSS personalizado para una apariencia minimalista
+# Aplicar estilo CSS personalizado con colores vibrantes
 st.markdown("""
     <style>
-    /* Fondo blanco y texto oscuro */
+    /* Fondo degradado */
     .stApp {
-        background-color: #f5f5f5;
+        background: linear-gradient(to right, #f6d365, #fda085);
         color: #333333;
     }
 
     /* Títulos */
     h1 {
-        color: #333333;
+        color: #ffffff;
+        text-align: center;
     }
 
     /* Diseño del botón */
     .stButton button {
-        background-color: #007bff;
+        background-color: #ff6f61;
         color: white;
         font-size: 16px;
-        border-radius: 6px;
+        border-radius: 8px;
         padding: 12px 24px;
         border: none;
     }
     .stButton button:hover {
-        background-color: #0056b3;
+        background-color: #ff3d30;
     }
 
     /* Texto del input */
     .stTextInput > div > input {
         background-color: #ffffff;
         color: #333333;
-        border-radius: 6px;
-        padding: 10px;
-        border: 1px solid #dddddd;
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #ff6f61;
     }
 
     /* Tarjetas de imagen */
     .stImage {
-        border: 1px solid #dddddd;
-        border-radius: 6px;
+        border: 2px solid #ff6f61;
+        border-radius: 8px;
+        padding: 4px;
+    }
+
+    /* Avisos y mensajes de error */
+    .stWarning, .stError {
+        color: #ff6f61;
+        font-weight: bold;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -57,7 +65,7 @@ st.title("Generador de Imágenes con Traducción")
 
 # Explicación
 st.write("""
-Esta aplicación traduce tu descripción en español al inglés y luego usa un modelo para generar dos imágenes ligeramente diferentes. Introduce tu descripción y haz clic en "Generar Imágenes" para ver los resultados.
+Esta aplicación traduce tu descripción en español al inglés y luego usa un modelo para generar **dos imágenes ligeramente diferentes**. Introduce tu descripción y haz clic en "Generar Imágenes" para ver los resultados.
 """)
 
 # Crear un objeto traductor
