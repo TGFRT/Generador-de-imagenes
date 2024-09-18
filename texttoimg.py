@@ -98,4 +98,4 @@ if st.button("Generar Imágenes"):
 if generated:
     if st.button("Volver a generar"):
         # Forzar la recarga de la página para generar nuevas imágenes
-        st.experimental_rerun() 
+        st.experimental_rerun()
