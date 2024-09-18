@@ -3,6 +3,7 @@ from googletrans import Translator
 import requests
 import io
 from PIL import Image
+import concurrent.futures
 
 # Configuración de la página
 st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
@@ -22,6 +23,15 @@ translator = Translator()
 # Pedir al usuario el prompt en español mediante un input de Streamlit
 user_prompt = st.text_input("¿Qué deseas generar? (en español)")
 
+# Definir la API y los headers de Hugging Face
+API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
+headers = {"Authorization": "Bearer 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"}
+
+# Función para hacer la solicitud a la API de Hugging Face
+def query(payload):
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response
+
 # Botón para ejecutar la generación de las imágenes
 if st.button("Generar Imágenes"):
     if user_prompt:
@@ -32,23 +42,19 @@ if st.button("Generar Imágenes"):
         prompt_1 = translated_prompt + " with vibrant colors"
         prompt_2 = translated_prompt + " with a dreamy atmosphere"
         
-        # Mostrar las traducciones al usuario
-        st.write(f"Prompt 1 traducido al inglés: **{prompt_1}**")
-        st.write(f"Prompt 2 traducido al inglés: **{prompt_2}**")
-        
-        # Definir la API y los headers de Hugging Face
-        API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
-        headers = {"Authorization": "Bearer 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"}
+        # Mostrar las traducciones al usuario (opcional, se puede eliminar si no quieres mostrar los prompts)
+        # st.write(f"Prompt 1 traducido al inglés: **{prompt_1}**")
+        # st.write(f"Prompt 2 traducido al inglés: **{prompt_2}**")
 
-        # Función para hacer la solicitud a la API de Hugging Face
-        def query(payload):
-            response = requests.post(API_URL, headers=headers, json=payload)
-            return response
-
-        # Generar dos imágenes con prompts ligeramente diferentes
+        # Generar las imágenes en paralelo usando concurrent.futures
         with st.spinner("Generando imágenes..."):
-            image_bytes_1 = query({"inputs": prompt_1})
-            image_bytes_2 = query({"inputs": prompt_2})
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future_image_1 = executor.submit(query, {"inputs": prompt_1})
+                future_image_2 = executor.submit(query, {"inputs": prompt_2})
+                
+                # Obtener los resultados
+                image_bytes_1 = future_image_1.result()
+                image_bytes_2 = future_image_2.result()
 
         # Verificar si hubo errores en las respuestas
         if image_bytes_1.status_code != 200 or image_bytes_2.status_code != 200:
