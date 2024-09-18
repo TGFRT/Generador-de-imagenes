@@ -61,7 +61,17 @@ if st.button("Generar Imágenes"):
 
         # Verificar si hubo errores en las respuestas
         if image_bytes_1.status_code != 200 or image_bytes_2.status_code != 200:
-            st.error(f"Error: {image_bytes_1.status_code} - {image_bytes_1.json().get('error', 'Unknown error')}")
+            error_message_1 = "Unknown error"
+            error_message_2 = "Unknown error"
+            try:
+                error_message_1 = image_bytes_1.json().get('error', 'Unknown error')
+            except ValueError:
+                pass
+            try:
+                error_message_2 = image_bytes_2.json().get('error', 'Unknown error')
+            except ValueError:
+                pass
+            st.error(f"Error: {image_bytes_1.status_code} - {error_message_1} | {image_bytes_2.status_code} - {error_message_2}")
         else:
             # Abrir las imágenes desde las respuestas
             st.session_state.image_1 = Image.open(io.BytesIO(image_bytes_1.content))
