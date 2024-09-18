@@ -12,8 +12,7 @@ st.title("Generador de Imágenes a partir de Descripciones en Español")
 
 # Explicación
 st.write("""
-Esta aplicación traduce tu descripción en español al inglés, luego usa un modelo de Hugging Face para generar dos imágenes a partir de esa descripción.
-Las imágenes serán ligeramente diferentes.
+Esta aplicación traduce tu descripción en español al inglés, luego usa un modelo de Hugging Face para generar dos imágenes ligeramente diferentes.
 """)
 
 # Crear un objeto traductor
@@ -31,10 +30,6 @@ if st.button("Generar Imágenes"):
         # Variar ligeramente el prompt para las dos imágenes
         prompt_1 = translated_prompt + " with vibrant colors"
         prompt_2 = translated_prompt + " with a dreamy atmosphere"
-        
-        # Mostrar las traducciones al usuario
-        st.write(f"Prompt 1 traducido al inglés: **{prompt_1}**")
-        st.write(f"Prompt 2 traducido al inglés: **{prompt_2}**")
         
         # Definir la API y los headers de Hugging Face
         API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
