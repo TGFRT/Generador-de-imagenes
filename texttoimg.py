@@ -39,11 +39,19 @@ if st.button("Generar Imágenes"):
             response = requests.post(API_URL, headers=headers, json=payload)
             return response
 
+        # Crear variaciones del prompt
+        prompt_variations = [
+            f"{translated_prompt} in a sunny day",
+            f"{translated_prompt} at sunset",
+            f"{translated_prompt} with vibrant colors",
+            f"{translated_prompt} in a fantasy style"
+        ]
+
         # Generar las 4 imágenes
         images = []
         with st.spinner("Generando 4 imágenes..."):
-            for i in range(4):
-                image_bytes = query({"inputs": translated_prompt})
+            for i, prompt_variation in enumerate(prompt_variations):
+                image_bytes = query({"inputs": prompt_variation})
                 
                 # Verificar si hubo errores en la respuesta
                 if image_bytes.status_code == 200:
