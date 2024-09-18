@@ -4,62 +4,32 @@ import requests
 import io
 from PIL import Image
 
-# Configuración del tema
-if "dark_mode" not in st.session_state:
-    st.session_state["dark_mode"] = False
-
-# Función para cambiar el tema
-def toggle_dark_mode():
-    st.session_state["dark_mode"] = not st.session_state["dark_mode"]
-
-# Aplicar tema oscuro o claro
-if st.session_state["dark_mode"]:
-    st.markdown(
-        """
-        <style>
-        body {
-            background-color: #0E0E0E;
-            color: #FFFFFF;
-        }
-        </style>
-        """, unsafe_allow_html=True
-    )
-else:
-    st.markdown(
-        """
-        <style>
-        body {
-            background-color: #F0F0F0;
-            color: #000000;
-        }
-        </style>
-        """, unsafe_allow_html=True
-    )
+# Configuración de la página
+st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
 
 # Título de la aplicación
-st.title("🔮 Generador Tecnológico de Imágenes IA")
+st.title("Generador de Imágenes a partir de Descripciones en Español")
 
-# Botón para cambiar el modo oscuro
-st.sidebar.title("Configuraciones")
-if st.sidebar.button("Cambiar a Modo Noche" if not st.session_state["dark_mode"] else "Cambiar a Modo Día"):
-    toggle_dark_mode()
+# Explicación
+st.write("""
+Esta aplicación traduce tu descripción en español al inglés, luego usa un modelo de Hugging Face para generar dos imágenes a partir de esa descripción.
+""")
 
 # Crear un objeto traductor
 translator = Translator()
 
 # Pedir al usuario el prompt en español mediante un input de Streamlit
-st.sidebar.write("Introduce tu descripción:")
-user_prompt = st.sidebar.text_input("Descripción en español", value="Un robot futurista")
+user_prompt = st.text_input("¿Qué deseas generar? (en español)")
 
-# Botón para generar o volver a generar
-if st.sidebar.button("Generar Nuevas Imágenes"):
+# Botón para ejecutar la generación de las imágenes
+if st.button("Generar Imágenes"):
     if user_prompt:
         # Traducir el prompt al inglés
         translated_prompt = translator.translate(user_prompt, src='es', dest='en').text
-
+        
         # Mostrar la traducción al usuario
         st.write(f"Prompt traducido al inglés: **{translated_prompt}**")
-
+        
         # Definir la API y los headers de Hugging Face
         API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
         headers = {"Authorization": "Bearer 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"}
@@ -69,44 +39,42 @@ if st.sidebar.button("Generar Nuevas Imágenes"):
             response = requests.post(API_URL, headers=headers, json=payload)
             return response
 
-        # Crear variaciones del prompt
-        prompt_variations = [
-            f"{translated_prompt} in a futuristic world",
-            f"{translated_prompt} with neon lights"
-        ]
+        # Generar dos imágenes con el mismo prompt traducido
+        with st.spinner("Generando imágenes..."):
+            image_bytes_1 = query({"inputs": translated_prompt})
+            image_bytes_2 = query({"inputs": translated_prompt})
 
-        # Generar las 2 imágenes
-        images = []
-        with st.spinner("Generando 2 imágenes..."):
-            for i, prompt_variation in enumerate(prompt_variations):
-                image_bytes = query({"inputs": prompt_variation})
+        # Verificar si hubo errores en las respuestas
+        if image_bytes_1.status_code != 200 or image_bytes_2.status_code != 200:
+            st.error(f"Error: {image_bytes_1.status_code} - {image_bytes_1.json().get('error', 'Unknown error')}")
+        else:
+            # Abrir las imágenes desde las respuestas
+            image_1 = Image.open(io.BytesIO(image_bytes_1.content))
+            image_2 = Image.open(io.BytesIO(image_bytes_2.content))
+            
+            # Mostrar las imágenes en Streamlit
+            st.image([image_1, image_2], caption=["Imagen 1", "Imagen 2"], use_column_width=True)
 
-                # Verificar si hubo errores en la respuesta
-                if image_bytes.status_code == 200:
-                    image = Image.open(io.BytesIO(image_bytes.content))
-                    images.append(image)
-                else:
-                    st.error(f"Error al generar la imagen {i+1}: {image_bytes.status_code} - {image_bytes.json().get('error', 'Unknown error')}")
-                    break
+            # Crear botones de descarga para ambas imágenes
+            buf1 = io.BytesIO()
+            buf2 = io.BytesIO()
+            image_1.save(buf1, format="PNG")
+            image_2.save(buf2, format="PNG")
+            buf1.seek(0)
+            buf2.seek(0)
 
-        # Si las 2 imágenes se generaron correctamente
-        if len(images) == 2:
-            # Mostrar las 2 imágenes en columnas
-            cols = st.columns(2)
-            for i, image in enumerate(images):
-                with cols[i]:
-                    st.image(image, caption=f"Imagen {i+1}", use_column_width=True)
-                    # Botón para descargar cada imagen
-                    img_byte_arr = io.BytesIO()
-                    image.save(img_byte_arr, format='PNG')
-                    img_byte_arr = img_byte_arr.getvalue()
-                    st.download_button(
-                        label=f"Descargar Imagen {i+1}",
-                        data=img_byte_arr,
-                        file_name=f"imagen_{i+1}.png",
-                        mime="image/png"
-                    )
+            st.download_button(
+                label="Descargar Imagen 1",
+                data=buf1,
+                file_name="imagen_1.png",
+                mime="image/png"
+            )
+
+            st.download_button(
+                label="Descargar Imagen 2",
+                data=buf2,
+                file_name="imagen_2.png",
+                mime="image/png"
+            )
     else:
-        st.warning("Por favor, introduce una descripción para generar imágenes.")
-else:
-    st.info("Presiona 'Generar Nuevas Imágenes' para comenzar.")
+        st.warning("Por favor, introduce un prompt para generar las imágenes.")
