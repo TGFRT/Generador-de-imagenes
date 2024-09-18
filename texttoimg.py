@@ -6,22 +6,21 @@ from PIL import Image
 import random
 
 # Configuración de la página
-st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
+st.set_page_config(page_title="Generador de Imágenes ", page_icon="🎨", layout="centered")
 
 # Título de la aplicación
-st.title("Generador de Imágenes a partir de Descripciones en Español")
+st.title("Generador de Imágenes a partir de Descripciones - IngenIAr")
 
 # Explicación
 st.write("""
-Esta aplicación traduce tu descripción en español al inglés, luego usa un modelo de Hugging Face para generar dos imágenes ligeramente diferentes.
-Puedes hacer clic en "Volver a generar" para obtener nuevas imágenes.
+Esta herramienta usa un modelo de IngenIAr para darte 2 imágenes de acuerdo a tu descripción.
 """)
 
 # Crear un objeto traductor
 translator = Translator()
 
 # Pedir al usuario el prompt en español mediante un input de Streamlit
-user_prompt = st.text_input("¿Qué deseas generar? (en español)")
+user_prompt = st.text_input("¿Qué deseas generar?")
 
 # Variable para controlar si se generaron las imágenes
 generated = False
@@ -92,10 +91,6 @@ if st.button("Generar Imágenes"):
             # Cambiar el estado de la variable para mostrar el botón "Volver a generar"
             generated = True
     else:
-        st.warning("Por favor, introduce un prompt para generar las imágenes.")
+        st.warning("Por favor, introduce una descripción para generar las imágenes.")
 
-# Mostrar el botón "Volver a generar" solo si las imágenes ya fueron generadas
-if generated:
-    if st.button("Volver a generar"):
-        # Forzar la recarga de la página para generar nuevas imágenes
-        st.experimental_rerun()
+# Mostrar el botón "Volver a generar" solo si las imágenes ya fueron generad
