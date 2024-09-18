@@ -23,8 +23,11 @@ translator = Translator()
 # Pedir al usuario el prompt en español mediante un input de Streamlit
 user_prompt = st.text_input("¿Qué deseas generar? (en español)")
 
-# Crear un botón que permitirá volver a generar las imágenes
-if st.button("Generar Imágenes") or st.button("Volver a generar"):
+# Variable para controlar si se generaron las imágenes
+generated = False
+
+# Botón para generar las imágenes
+if st.button("Generar Imágenes"):
     if user_prompt:
         # Traducir el prompt al inglés
         translated_prompt = translator.translate(user_prompt, src='es', dest='en').text
@@ -85,5 +88,14 @@ if st.button("Generar Imágenes") or st.button("Volver a generar"):
                 file_name="imagen_2.png",
                 mime="image/png"
             )
+
+            # Cambiar el estado de la variable para mostrar el botón "Volver a generar"
+            generated = True
     else:
         st.warning("Por favor, introduce un prompt para generar las imágenes.")
+
+# Mostrar el botón "Volver a generar" solo si las imágenes ya fueron generadas
+if generated:
+    if st.button("Volver a generar"):
+        # Forzar la recarga de la página para generar nuevas imágenes
+        st.experimental_rerun()
