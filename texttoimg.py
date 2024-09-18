@@ -8,64 +8,49 @@ import random
 # Configuración de la página
 st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
 
-# Aplicar estilo CSS personalizado con colores azul y naranja
+# Aplicar estilo CSS para los botones de descarga como íconos sobre las imágenes
 st.markdown("""
     <style>
-    /* Fondo blanco y texto oscuro */
+    /* Fondo y estilo general */
     .stApp {
-        background-color: #f0f4f8;
+        background-color: #ffffff;
         color: #333333;
     }
 
     /* Títulos */
     h1 {
-        color: #0056b3;
         text-align: center;
+        color: #0056b3;
     }
 
-    /* Diseño del botón */
-    .stButton button {
-        background-color: #ff6f00;
-        color: white;
-        font-size: 16px;
-        border-radius: 8px;
-        padding: 12px 24px;
-        border: none;
-    }
-    .stButton button:hover {
-        background-color: #e65c00;
+    /* Botón de descarga como ícono sobre la imagen */
+    .download-icon {
+        position: relative;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 30px;
+        color: #0056b3;
     }
 
-    /* Texto del input */
-    .stTextInput > div > input {
-        background-color: #ffffff;
-        color: #333333;
-        border-radius: 8px;
-        padding: 12px;
-        border: 1px solid #0056b3;
+    .download-icon:hover {
+        color: #ff6f00;
     }
 
-    /* Tarjetas de imagen */
+    /* Imagen con borde */
     .stImage {
         border: 2px solid #0056b3;
         border-radius: 8px;
-        padding: 4px;
-    }
-
-    /* Avisos y mensajes de error */
-    .stWarning, .stError {
-        color: #ff6f00;
-        font-weight: bold;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # Título de la aplicación
-st.title("Generador de Imágenes con Traducción")
+st.title("Generador de Imágenes a partir de Descripciones")
 
 # Explicación
 st.write("""
-Esta aplicación traduce tu descripción en español al inglés y luego usa un modelo para generar **dos imágenes ligeramente diferentes**. Introduce tu descripción y haz clic en "Generar Imágenes" para ver los resultados.
+Esta aplicación traduce tu descripción en español al inglés y luego usa un modelo para generar **dos imágenes**. Introduce tu descripción y haz clic en "Generar Imágenes" para ver los resultados.
 """)
 
 # Crear un objeto traductor
@@ -73,9 +58,6 @@ translator = Translator()
 
 # Pedir al usuario el prompt en español mediante un input de Streamlit
 user_prompt = st.text_input("¿Qué deseas generar? (en español)")
-
-# Variable para controlar si se generaron las imágenes
-generated = False
 
 # Botón para generar las imágenes
 if st.button("Generar Imágenes"):
@@ -114,33 +96,26 @@ if st.button("Generar Imágenes"):
             
             with col1:
                 st.image(image_1, caption="Imagen 1", use_column_width=True)
+                # Crear botón de descarga como ícono sobre la imagen
+                buf1 = io.BytesIO()
+                image_1.save(buf1, format="PNG")
+                buf1.seek(0)
+                st.markdown(
+                    f'<a href="data:image/png;base64,{buf1.getvalue().hex()}" download="imagen_1.png">'
+                    f'<i class="download-icon">&#x2B07;</i></a>', 
+                    unsafe_allow_html=True
+                )
             
             with col2:
                 st.image(image_2, caption="Imagen 2", use_column_width=True)
-
-            # Crear botones de descarga para ambas imágenes
-            buf1 = io.BytesIO()
-            buf2 = io.BytesIO()
-            image_1.save(buf1, format="PNG")
-            image_2.save(buf2, format="PNG")
-            buf1.seek(0)
-            buf2.seek(0)
-
-            col1.download_button(
-                label="Descargar Imagen 1",
-                data=buf1,
-                file_name="imagen_1.png",
-                mime="image/png"
-            )
-
-            col2.download_button(
-                label="Descargar Imagen 2",
-                data=buf2,
-                file_name="imagen_2.png",
-                mime="image/png"
-            )
-
-            # Cambiar el estado de la variable para mostrar que las imágenes se generaron
-            generated = True
+                # Crear botón de descarga como ícono sobre la imagen
+                buf2 = io.BytesIO()
+                image_2.save(buf2, format="PNG")
+                buf2.seek(0)
+                st.markdown(
+                    f'<a href="data:image/png;base64,{buf2.getvalue().hex()}" download="imagen_2.png">'
+                    f'<i class="download-icon">&#x2B07;</i></a>', 
+                    unsafe_allow_html=True
+                )
     else:
         st.warning("Por favor, introduce un prompt para generar las imágenes.")
