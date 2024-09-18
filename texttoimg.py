@@ -7,22 +7,21 @@ import concurrent.futures
 import random
 
 # Configuración de la página
-st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
+st.set_page_config(page_title="Generador de Imágenes", page_icon="🎨", layout="centered")
 
 # Título de la aplicación
-st.title("Generador de Imágenes a partir de Descripciones en Español")
+st.title("Generador de Imágenes")
 
 # Explicación
 st.write("""
-Esta aplicación traduce tu descripción en español al inglés, luego usa un modelo de Hugging Face para generar dos imágenes a partir de esa descripción.
-Las imágenes serán ligeramente diferentes.
+La generación puede demorar más si su internet es lento, mientras sea mas específico, mejor serán los resultados.
 """)
 
 # Crear un objeto traductor
 translator = Translator()
 
 # Pedir al usuario el prompt en español mediante un input de Streamlit
-user_prompt = st.text_input("¿Qué deseas generar? (en español)")
+user_prompt = st.text_input("¿Qué deseas generar?")
 
 # Definir la API y los headers de Hugging Face
 API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
