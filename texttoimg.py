@@ -5,14 +5,14 @@ import io
 from PIL import Image
 
 # Configuración de la página
-st.set_page_config(page_title="Generador de Imágenes", page_icon="🎨", layout="centered")
+st.set_page_config(page_title="Generador de imágenes", page_icon="🎨", layout="centered")
 
 # Título de la aplicación
-st.title("Generador de Imágenes a partir de Descripciones en Español")
+st.title("Generador de Imágenes - ingenIAr")
 
 # Explicación
 st.write("""
-Esta aplicación traduce tu descripción en español al inglés, luego usa un modelo de IngenIAr para generar una imagen a partir de esa descripción.
+Esta aplicación usa tu descripción y luego usa un modelo de IngenIAr para generar una imagen a partir de esa descripción.
 """)
 
 # Crear un objeto traductor
