@@ -8,24 +8,24 @@ import random
 # Configuración de la página
 st.set_page_config(page_title="Generador de Imágenes con Traducción", page_icon="🎨", layout="centered")
 
-# Aplicar estilo CSS personalizado con colores vibrantes
+# Aplicar estilo CSS personalizado con colores azul y naranja
 st.markdown("""
     <style>
-    /* Fondo degradado */
+    /* Fondo blanco y texto oscuro */
     .stApp {
-        background: linear-gradient(to right, #f6d365, #fda085);
+        background-color: #f0f4f8;
         color: #333333;
     }
 
     /* Títulos */
     h1 {
-        color: #ffffff;
+        color: #0056b3;
         text-align: center;
     }
 
     /* Diseño del botón */
     .stButton button {
-        background-color: #ff6f61;
+        background-color: #ff6f00;
         color: white;
         font-size: 16px;
         border-radius: 8px;
@@ -33,7 +33,7 @@ st.markdown("""
         border: none;
     }
     .stButton button:hover {
-        background-color: #ff3d30;
+        background-color: #e65c00;
     }
 
     /* Texto del input */
@@ -42,19 +42,19 @@ st.markdown("""
         color: #333333;
         border-radius: 8px;
         padding: 12px;
-        border: 1px solid #ff6f61;
+        border: 1px solid #0056b3;
     }
 
     /* Tarjetas de imagen */
     .stImage {
-        border: 2px solid #ff6f61;
+        border: 2px solid #0056b3;
         border-radius: 8px;
         padding: 4px;
     }
 
     /* Avisos y mensajes de error */
     .stWarning, .stError {
-        color: #ff6f61;
+        color: #ff6f00;
         font-weight: bold;
     }
     </style>
