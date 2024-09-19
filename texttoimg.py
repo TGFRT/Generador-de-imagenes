@@ -42,7 +42,7 @@ if st.button("Generar Imágenes"):
         prompt_suffix_1 = f" with vibrant colors {random.randint(1, 1000)}"
         prompt_suffix_2 = f" with a dreamy atmosphere {random.randint(1, 1000)}"
         prompt_1 = translated_prompt + prompt_suffix_1
-        prompt_2 = translated_prompt + prompt_suffix_2
+        prompt_2 = translated_prompt 
         
         # Mostrar las traducciones al usuario (opcional, se puede eliminar si no quieres mostrar los prompts)
         # st.write(f"Prompt 1 traducido al inglés: **{prompt_1}**")
