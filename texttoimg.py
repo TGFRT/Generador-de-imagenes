@@ -60,8 +60,8 @@ if st.button("Generar Imágenes"):
 
         # Verificar si hubo errores en las respuestas
         if image_bytes_1.status_code != 200 or image_bytes_2.status_code != 200:
-            error_message_1 = "Unknown error"
-            error_message_2 = "Unknown error"
+            error_message_1 = "Hay muchas personas usando esta herramienta, vuelva a generar o descargue la version de escritorio y utilize cualquier herramienta hasta sin internet!!"
+            error_message_2 = "Hay muchas personas usando esta herramienta, vuelva a generar o descargue la version de escritorio y utilize cualquier herramienta hasta sin internet!!"
             try:
                 error_message_1 = image_bytes_1.json().get('error', 'Unknown error')
             except ValueError:
