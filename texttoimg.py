@@ -1,37 +1,3 @@
-import streamlit as st
-from googletrans import Translator
-import requests
-import io
-from PIL import Image
-import concurrent.futures
-import random
-
-# Configuración de la página
-st.set_page_config(page_title="Generador de Imágenes", page_icon="🎨", layout="centered")
-
-# Título de la aplicación
-st.title("Generador de Imágenes")
-
-# Explicación
-st.write("""
-La generación puede demorar más si su internet es lento, mientras sea más específico, mejor serán los resultados.
-""")
-
-# Crear un objeto traductor
-translator = Translator()
-
-# Pedir al usuario el prompt en español mediante un input de Streamlit
-user_prompt = st.text_input("¿Qué deseas generar?")
-
-# Definir la API y los headers de Hugging Face
-API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
-headers = {"Authorization": "Bearer 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"}
-
-# Función para hacer la solicitud a la API de Hugging Face
-def query(payload):
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response
-
 # Botón para ejecutar la generación de las imágenes
 if st.button("Generar Imágenes"):
     if user_prompt:
@@ -53,25 +19,24 @@ if st.button("Generar Imágenes"):
                 image_bytes_1 = future_image_1.result()
                 image_bytes_2 = future_image_2.result()
 
-        error_occurred = False
-        
-        if image_bytes_1.status_code == 429:
-            st.error("Error 429: Has alcanzado el límite de uso gratuito. Considera suscribirte a IngenIAr mensual y olvídate de estos límites. Podrás usar nuestras herramientas incluso sin conexión a internet.")
-            error_occurred = True
-        elif image_bytes_1.status_code != 200:
+        error_messages = []
+
+        if image_bytes_1.status_code == 429 or image_bytes_2.status_code == 429:
+            error_messages.append("Error 429: Has alcanzado el límite de uso gratuito. Considera suscribirte a IngenIAr mensual y olvídate de estos límites. Podrás usar nuestras herramientas incluso sin conexión a internet.")
+
+        if image_bytes_1.status_code != 200:
             error_message_1 = image_bytes_1.json().get('error', 'Unknown error')
-            st.error(f"Error al generar la Imagen 1: {error_message_1}")
-            error_occurred = True
+            error_messages.append(f"Error al generar la Imagen 1: {error_message_1}")
             
-        if image_bytes_2.status_code == 429:
-            st.error("Error 429: Has alcanzado el límite de uso gratuito. Considera suscribirte a IngenIAr mensual y olvídate de estos límites. Podrás usar nuestras herramientas incluso sin conexión a internet.")
-            error_occurred = True
-        elif image_bytes_2.status_code != 200:
+        if image_bytes_2.status_code != 200:
             error_message_2 = image_bytes_2.json().get('error', 'Unknown error')
-            st.error(f"Error al generar la Imagen 2: {error_message_2}")
-            error_occurred = True
-            
-        if not error_occurred:
+            error_messages.append(f"Error al generar la Imagen 2: {error_message_2}")
+
+        # Mostrar todos los mensajes de error una sola vez
+        if error_messages:
+            for message in error_messages:
+                st.error(message)
+        else:
             st.session_state.image_1 = Image.open(io.BytesIO(image_bytes_1.content))
             st.session_state.image_2 = Image.open(io.BytesIO(image_bytes_2.content))
 
