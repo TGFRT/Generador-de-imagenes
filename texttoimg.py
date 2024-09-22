@@ -53,27 +53,16 @@ if st.button("Generar Imágenes"):
                 image_bytes_2 = future_image_2.result()
 
         # Manejo de errores
-        error_messages = []
-
         if image_bytes_1.status_code == 429 or image_bytes_2.status_code == 429:
-            error_messages.append("Error 429: Has alcanzado el límite de uso gratuito. Considera suscribirte a IngenIAr mensual y olvídate de estos límites. Podrás usar nuestras herramientas incluso sin conexión a internet.")
-
-        if image_bytes_1.status_code != 200:
-            error_message_1 = image_bytes_1.json().get('error', 'Unknown error')
-            error_messages.append(f"Error al generar la Imagen 1: {error_message_1}")
-            
-        if image_bytes_2.status_code != 200:
-            error_message_2 = image_bytes_2.json().get('error', 'Unknown error')
-            error_messages.append(f"Error al generar la Imagen 2: {error_message_2}")
-
-        # Mostrar los mensajes de error
-        if error_messages:
-            for message in error_messages:
-                st.error(message)
+            st.error("Error 429: Has alcanzado el límite de uso gratuito. Considera suscribirte a IngenIAr mensual y olvídate de estos límites. Podrás usar nuestras herramientas incluso sin conexión a internet.")
         else:
-            # Abrir las imágenes desde las respuestas
-            st.session_state.image_1 = Image.open(io.BytesIO(image_bytes_1.content))
-            st.session_state.image_2 = Image.open(io.BytesIO(image_bytes_2.content))
+            # Comprobar si hay otros errores
+            if image_bytes_1.status_code != 200 or image_bytes_2.status_code != 200:
+                st.error("Hubo un problema al generar las imágenes. Intenta de nuevo más tarde.")
+            else:
+                # Abrir las imágenes desde las respuestas
+                st.session_state.image_1 = Image.open(io.BytesIO(image_bytes_1.content))
+                st.session_state.image_2 = Image.open(io.BytesIO(image_bytes_2.content))
 
 # Si las imágenes ya se han generado, mostrarlas
 if 'image_1' in st.session_state and 'image_2' in st.session_state:
